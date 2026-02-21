@@ -2,18 +2,20 @@
 
 import json
 import re
-
+import google.generativeai as genai
 from config import GEMINI_API_KEY
 from mock_data import LESSON_CONTENT, LESSONS, MOCK_QUIZ
 
 if GEMINI_API_KEY:
     try:
-        import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        _model = genai.GenerativeModel("gemini-1.5-flash")
-    except Exception:
+        _model = genai.GenerativeModel("gemini-flash-latest")
+        print("Gemini API initialized successfully.")
+    except Exception as e:
+        print("Gemini init fail:", e)
         _model = None
 else:
+    print("No Gemini API key found. Using mock lesson content and quiz.")
     _model = None
 
 
@@ -29,7 +31,8 @@ def get_lessons() -> list[dict]:
             data = json.loads(text)
             if isinstance(data, list) and len(data) >= 1:
                 return data
-        except Exception:
+        except Exception as e:
+            print("Gemini failed get_lessons", e)
             pass
     return LESSONS
 
@@ -44,7 +47,8 @@ def get_lesson_content(lesson_id: str) -> dict | None:
             if "```" in text:
                 text = re.sub(r"^```\w*\n?", "", text).replace("```", "").strip()
             return json.loads(text)
-        except Exception:
+        except Exception as e:
+            print("Gemini failed get_lesson_content", e)
             pass
     return LESSON_CONTENT.get(lesson_id)
 
@@ -61,6 +65,7 @@ def get_adaptive_quiz(lesson_id: str, topic: str, num_questions: int = 3) -> dic
             data = json.loads(text)
             if "questions" in data and isinstance(data["questions"], list):
                 return data
-        except Exception:
+        except Exception as e:
+            print("Gemini failed get_adaptive_quiz", e)
             pass
     return MOCK_QUIZ

@@ -70,6 +70,10 @@
       <span class="text-sm text-gray-600 font-semibold w-full">Badges</span>
       <div id="badges" class="flex gap-2 flex-wrap"></div>
     </div>
+    <div class="flex gap-2 flex-wrap mt-6">
+      <span class="text-sm text-gray-600 font-semibold w-full">Locked Badges</span>
+      <div id="lockedBadges" class="flex gap-2 flex-wrap"></div>
+    </div>
   </main>
 
   <div class="bottom-nav">
@@ -104,6 +108,8 @@
       const badges = p.badges || [];
       const names = { first_lesson: 'First lesson', streak_3: '3-day streak', streak_7: '7-day streak', all_lessons: 'All lessons', call_simulator: 'Call pro', quiz_master: 'Quiz master' };
       document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-2 py-1 rounded-full bg-coinyellow text-gray-800 text-xs font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges!</span>';
+      const lockedBadges = Object.keys(names).filter(b => !badges.includes(b));
+      document.getElementById('lockedBadges').innerHTML = lockedBadges.length ? lockedBadges.map(b => `<span class="px-2 py-1 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">No locked badges!</span>';
     })();
   </script>
 </body>
