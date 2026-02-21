@@ -5,12 +5,12 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, Response, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
 
 from config import BASE_DIR, DEMO_USER, SESSION_COOKIE_NAME, STATIC_DIR
 from auth import create_session, load_session, verify_login
 from gemini_service import get_lessons, get_lesson_content, get_adaptive_quiz
-from elevenlabs_service import get_voice_audio
+from elevenlabs_service import get_voice_audio, get_voice_audio_bytes, is_elevenlabs_available
+from fastapi.staticfiles import StaticFiles
 from progress_store import (
     get_progress,
     add_xp,
@@ -125,6 +125,21 @@ async def api_call_script():
 async def api_call_audio():
     has_audio, b64 = get_voice_audio(CALL_SIMULATOR_SCRIPT, "call_sim")
     return {"has_elevenlabs": has_audio, "audio_base64": b64}
+
+
+# ElevenLabs proxy (same as coinifydupe: POST with { text }, returns raw audio/mpeg)
+@app.post("/api/elevenlabs/speech")
+async def api_elevenlabs_speech(request: Request):
+    body = await request.json() if request.headers.get("content-type", "").startswith("application/json") else {}
+    text = (body.get("text") or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Missing text")
+    if not is_elevenlabs_available():
+        raise HTTPException(status_code=500, detail="ElevenLabs API key not configured")
+    audio_bytes = get_voice_audio_bytes(text)
+    if not audio_bytes:
+        raise HTTPException(status_code=500, detail="Failed to generate speech")
+    return Response(content=audio_bytes, media_type="audio/mpeg")
 
 
 @app.post("/api/call-simulator/complete")

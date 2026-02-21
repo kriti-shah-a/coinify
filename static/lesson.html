@@ -5,46 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lesson – Coinify</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/styles.css" />
-  <script>
-    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
-  </script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
-  <nav class="nav-bar">
-    <a href="/static/lessons.html" class="text-coinblue font-bold">← Back</a>
-    <span class="font-bold text-coinblue truncate" id="navTitle">Lesson</span>
-    <span class="w-12"></span>
-  </nav>
+<body class="bg-[#faf9f6]">
+  <div class="grain-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
 
-  <main class="page pt-6">
+  <main class="page pt-8 space-y-6">
+    <a href="/static/lessons.html" class="text-xs mono uppercase tracking-widest flex items-center gap-2 mb-8 text-zinc-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg> Back
+    </a>
+
     <div id="contentView">
-      <div class="flex justify-center mb-6"><div class="coin-mascot"></div></div>
-      <h1 class="text-2xl font-bold text-coinblue mb-6" id="lessonTitle"></h1>
-      <div id="sections" class="space-y-6 mb-8"></div>
-      <button id="startQuiz" class="w-full btn-primary py-3 text-lg">
-        Start quiz
-      </button>
+      <div class="relative">
+        <div class="washi-tape" style="transform: rotate(2deg); left: 20%;"></div>
+        <div class="vellum-card p-8 rounded-2xl">
+          <div class="coin-mascot inline-block mb-4">
+            <svg width="64" height="64" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="#FFD700" stroke="#B8860B" stroke-width="2"/>
+              <circle cx="50" cy="50" r="35" fill="none" stroke="#B8860B" stroke-width="1" stroke-dasharray="4 2"/>
+              <text x="50" y="65" text-anchor="middle" font-family="serif" font-size="40" fill="#B8860B">$</text>
+              <circle cx="35" cy="40" r="3" fill="#333"/>
+              <circle cx="65" cy="40" r="3" fill="#333"/>
+              <path d="M 40 55 Q 50 65 60 55" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h1 class="serif text-3xl mb-4 italic" id="lessonTitle">Lesson</h1>
+          <div id="sections" class="space-y-6 mb-8"></div>
+          <button id="startQuiz" class="w-full bg-zinc-900 text-white p-4 rounded-full font-semibold hover:bg-zinc-700 transition-all transform hover:scale-[1.02] shadow-xl">
+            Start quiz
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="quizView" class="hidden">
-      <div class="mb-4 flex items-center justify-between">
-        <span class="text-gray-600 font-semibold">Question <span id="qNum">1</span> of <span id="qTotal">0</span></span>
-        <span class="streak-badge" id="quizScore">0 pts</span>
-      </div>
-      <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-        <p class="text-lg font-bold text-gray-800 mb-6" id="qText"></p>
+      <div class="vellum-card p-6 rounded-2xl mb-6">
+        <div class="mb-4 flex items-center justify-between">
+          <span class="text-gray-600 font-semibold">Question <span id="qNum">1</span> of <span id="qTotal">0</span></span>
+          <span class="mono text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-200" id="quizScore">0 pts</span>
+        </div>
+        <p class="text-lg font-bold text-zinc-800 mb-6" id="qText"></p>
         <div id="options" class="space-y-3"></div>
       </div>
-      <button id="nextQ" class="hidden w-full btn-primary py-3 text-lg">Next</button>
+      <button id="nextQ" class="hidden w-full bg-zinc-900 text-white p-4 rounded-full font-semibold hover:bg-zinc-700">Next</button>
     </div>
 
     <div id="resultView" class="hidden text-center py-8">
-      <div class="text-6xl mb-4">🎉</div>
-      <h2 class="text-2xl font-bold text-coingreen mb-2">Lesson complete!</h2>
-      <p class="text-gray-600 mb-2">You earned <strong id="earnedXp">0</strong> XP</p>
-      <a href="/static/lessons.html" class="inline-block btn-primary mt-4 px-8">Back to lessons</a>
+      <div class="vellum-card p-8 rounded-2xl">
+        <div class="text-5xl mb-4">🎉</div>
+        <h2 class="serif text-2xl italic text-emerald-700 mb-2">Lesson complete!</h2>
+        <p class="text-gray-600 mb-2">You earned <strong id="earnedXp">0</strong> XP</p>
+        <a href="/static/lessons.html" class="inline-block mt-4 bg-zinc-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-zinc-700">Back to lessons</a>
+      </div>
     </div>
   </main>
 
@@ -62,16 +77,16 @@
     async function loadLesson() {
       const me = await getMe();
       if (!me || !me.user) { window.location.href = '/static/login.html'; return; }
-      document.getElementById('navTitle').textContent = 'Lesson';
+      document.getElementById('lessonTitle').textContent = 'Lesson';
       const content = await getLesson(lessonId);
-      if (!content) { document.getElementById('contentView').innerHTML = '<p class="text-gray-600">Lesson not found.</p>'; return; }
+      if (!content) { document.getElementById('contentView').innerHTML = '<p class="text-gray-600 vellum-card p-6 rounded-2xl">Lesson not found.</p>'; return; }
       lessonContent = content;
       document.getElementById('lessonTitle').textContent = content.title || 'Lesson';
       const sections = content.sections || [];
       document.getElementById('sections').innerHTML = sections.map(s => `
-        <div class="bg-white rounded-xl p-4 shadow-sm">
-          <h3 class="font-bold text-coinblue mb-2">${s.title || s.heading || ''}</h3>
-          <p class="text-gray-700">${s.body || s.content || ''}</p>
+        <div class="bg-white/50 rounded-xl p-4 border border-white/60">
+          <h3 class="serif font-bold text-zinc-800 mb-2">${s.title || s.heading || ''}</h3>
+          <p class="text-gray-700 leading-relaxed">${s.body || s.content || ''}</p>
         </div>
       `).join('');
     }
@@ -104,7 +119,7 @@
       document.getElementById('qText').textContent = q.text;
       document.getElementById('quizScore').textContent = score + ' pts';
       const opts = (q.options || []).map((opt, i) => `
-        <button type="button" class="option w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-coinblue focus:outline-none font-medium" data-index="${i}">
+        <button type="button" class="option w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-amber-600 focus:outline-none font-medium transition-colors" data-index="${i}">
           ${opt}
         </button>
       `).join('');
@@ -121,14 +136,15 @@
       const correct = q.correct === idx;
       if (correct) {
         score += 10;
-        btn.classList.add('border-coingreen', 'bg-green-50');
+        btn.classList.add('border-emerald-500', 'bg-emerald-50');
       } else {
         btn.classList.add('border-red-500', 'bg-red-50');
         const correctBtn = document.querySelector(`.option[data-index="${q.correct}"]`);
-        if (correctBtn) correctBtn.classList.add('border-coingreen', 'bg-green-50');
+        if (correctBtn) correctBtn.classList.add('border-emerald-500', 'bg-emerald-50');
       }
       document.getElementById('quizScore').textContent = score + ' pts';
       if (qIndex < quiz.questions.length - 1) {
+        document.getElementById('nextQ').textContent = 'Next';
         document.getElementById('nextQ').classList.remove('hidden');
       } else {
         document.getElementById('nextQ').textContent = 'Finish';
