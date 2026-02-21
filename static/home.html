@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home – Coinify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <script>
+    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
+  </script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <nav class="nav-bar">
+    <span class="font-bold text-coinblue text-lg">Coinify</span>
+    <div class="flex items-center gap-3">
+      <span class="streak-badge" id="streak">🔥 0</span>
+      <span class="text-coinblue font-bold">Lv.<span id="level">1</span></span>
+    </div>
+  </nav>
+
+  <main class="page pt-6">
+    <div class="flex items-center gap-4 mb-6">
+      <div class="coin-mascot"></div>
+      <div>
+        <h1 class="text-xl font-bold text-gray-800">Hi, <span id="userName">Learner</span>!</h1>
+        <p class="text-gray-600 text-sm">Ready to learn?</p>
+      </div>
+    </div>
+
+    <div class="mb-6">
+      <div class="flex justify-between text-sm mb-1">
+        <span class="text-gray-600">Daily progress</span>
+        <span class="font-bold text-coinblue"><span id="xp">0</span> XP</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="xpFill" style="width: 0%"></div>
+      </div>
+      <p class="text-xs text-gray-500 mt-1"><span id="xpToNext">100</span> XP to next level</p>
+    </div>
+
+    <a href="/static/lessons.html" class="block w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-coingreen mb-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">📚</span>
+          <div>
+            <h2 class="font-bold text-gray-800">Lessons</h2>
+            <p class="text-sm text-gray-600">Learn budgeting & money basics</p>
+          </div>
+        </div>
+        <span class="text-coinblue font-bold">→</span>
+      </div>
+    </a>
+
+    <a href="/static/call-simulator.html" class="block w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-200 mb-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">📞</span>
+          <div>
+            <h2 class="font-bold text-gray-800">Call Simulator</h2>
+            <p class="text-sm text-gray-600">Final assessment – spot the scam</p>
+          </div>
+        </div>
+        <span class="text-gray-400 font-bold">→</span>
+      </div>
+    </a>
+
+    <div class="flex gap-2 flex-wrap mt-6">
+      <span class="text-sm text-gray-600 font-semibold w-full">Badges</span>
+      <div id="badges" class="flex gap-2 flex-wrap"></div>
+    </div>
+  </main>
+
+  <div class="bottom-nav">
+    <a href="/static/home.html" class="active">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      Home
+    </a>
+    <a href="/static/lessons.html">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+      Lessons
+    </a>
+    <a href="/static/account.html">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Account
+    </a>
+  </div>
+
+  <script src="/static/js/api.js"></script>
+  <script>
+    (async () => {
+      const me = await getMe();
+      if (!me || !me.user) { window.location.href = '/static/login.html'; return; }
+      const p = me.progress || {};
+      document.getElementById('userName').textContent = me.user.display_name || me.user.username || 'Learner';
+      document.getElementById('level').textContent = p.level || 1;
+      document.getElementById('xp').textContent = p.xp || 0;
+      document.getElementById('streak').innerHTML = '🔥 ' + (p.current_streak || 0);
+      const xp = p.xp || 0;
+      const xpInLevel = xp % 100;
+      document.getElementById('xpFill').style.width = xpInLevel + '%';
+      document.getElementById('xpToNext').textContent = 100 - xpInLevel;
+      const badges = p.badges || [];
+      const names = { first_lesson: 'First lesson', streak_3: '3-day streak', streak_7: '7-day streak', all_lessons: 'All lessons', call_simulator: 'Call pro', quiz_master: 'Quiz master' };
+      document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-2 py-1 rounded-full bg-coinyellow text-gray-800 text-xs font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges!</span>';
+    })();
+  </script>
+</body>
+</html>

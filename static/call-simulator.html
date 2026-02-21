@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Call Simulator – Coinify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <script>
+    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
+  </script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <nav class="nav-bar">
+    <a href="/static/home.html" class="text-coinblue font-bold">← Back</a>
+    <span class="font-bold text-coinblue">Call Simulator</span>
+    <span class="w-12"></span>
+  </nav>
+
+  <main class="page pt-6">
+    <div class="text-center mb-6">
+      <div class="inline-flex justify-center mb-4"><div class="coin-mascot"></div></div>
+      <h1 class="text-2xl font-bold text-coinblue mb-2">Final assessment</h1>
+      <p class="text-gray-600">Listen to this “support” call. Spot what’s wrong and learn how to stay safe.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+      <p class="text-sm text-gray-600 mb-4">Script (what the “caller” says):</p>
+      <div id="script" class="text-gray-800 whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded-xl mb-4"></div>
+      <div class="flex gap-2">
+        <button id="playBtn" class="btn-primary flex-1 py-3">Play call (voice)</button>
+        <button id="stopBtn" class="btn-outline py-3" disabled>Stop</button>
+      </div>
+      <p id="voiceNote" class="text-xs text-gray-500 mt-2 hidden">Using browser voice (no API key).</p>
+    </div>
+
+    <div class="bg-coinpurple/10 rounded-2xl p-4 border-2 border-coinpurple mb-6">
+      <h3 class="font-bold text-coinpurple mb-2">What to watch for</h3>
+      <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+        <li>Pressure to act immediately</li>
+        <li>Asking for personal info (name, DOB, password)</li>
+        <li>Suggesting you call back to “verify” – real banks don’t need you to prove it’s them this way</li>
+      </ul>
+    </div>
+
+    <button id="completeBtn" class="w-full btn-primary py-3 text-lg">I’ve listened – Complete assessment</button>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script>
+    let currentSource = null;
+    let useElevenLabs = false;
+    let audioBase64 = null;
+
+    (async () => {
+      const me = await getMe();
+      if (!me || !me.user) { window.location.href = '/static/login.html'; return; }
+
+      const scriptData = await getCallSimulatorScript();
+      const scriptText = (scriptData && scriptData.script) ? scriptData.script : 'No script loaded.';
+      document.getElementById('script').textContent = scriptText;
+
+      const audioData = await getCallSimulatorAudio();
+      useElevenLabs = !!(audioData && audioData.has_elevenlabs && audioData.audio_base64);
+      audioBase64 = audioData && audioData.audio_base64 ? audioData.audio_base64 : null;
+      if (!useElevenLabs) document.getElementById('voiceNote').classList.remove('hidden');
+    })();
+
+    function stopPlayback() {
+      if (currentSource) {
+        try {
+          if (currentSource.pause) currentSource.pause();
+          else if (currentSource.stop) currentSource.stop();
+        } catch (_) {}
+        currentSource = null;
+      }
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      document.getElementById('playBtn').disabled = false;
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    document.getElementById('playBtn').addEventListener('click', async () => {
+      const scriptEl = document.getElementById('script');
+      const text = scriptEl ? scriptEl.textContent : '';
+
+      document.getElementById('playBtn').disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+
+      if (useElevenLabs && audioBase64) {
+        try {
+          const dataUrl = 'data:audio/mpeg;base64,' + audioBase64;
+          const audio = new Audio(dataUrl);
+          currentSource = audio;
+          audio.onended = () => stopPlayback();
+          audio.onerror = () => { stopPlayback(); fallbackSpeech(text); };
+          audio.play();
+        } catch (e) {
+          fallbackSpeech(text);
+        }
+      } else {
+        fallbackSpeech(text);
+      }
+    });
+
+    function fallbackSpeech(text) {
+      if (!window.speechSynthesis) {
+        document.getElementById('playBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(text.substring(0, 5000));
+      u.onend = () => stopPlayback();
+      window.speechSynthesis.speak(u);
+    }
+
+    document.getElementById('stopBtn').addEventListener('click', stopPlayback);
+
+    document.getElementById('completeBtn').addEventListener('click', async () => {
+      stopPlayback();
+      await completeCallSimulator();
+      alert('Assessment complete! You earned the Call Pro badge and 50 XP.');
+      window.location.href = '/static/home.html';
+    });
+  </script>
+</body>
+</html>

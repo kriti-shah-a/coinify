@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson – Coinify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <script>
+    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
+  </script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+  <nav class="nav-bar">
+    <a href="/static/lessons.html" class="text-coinblue font-bold">← Back</a>
+    <span class="font-bold text-coinblue truncate" id="navTitle">Lesson</span>
+    <span class="w-12"></span>
+  </nav>
+
+  <main class="page pt-6">
+    <div id="contentView">
+      <div class="flex justify-center mb-6"><div class="coin-mascot"></div></div>
+      <h1 class="text-2xl font-bold text-coinblue mb-6" id="lessonTitle"></h1>
+      <div id="sections" class="space-y-6 mb-8"></div>
+      <button id="startQuiz" class="w-full btn-primary py-3 text-lg">
+        Start quiz
+      </button>
+    </div>
+
+    <div id="quizView" class="hidden">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="text-gray-600 font-semibold">Question <span id="qNum">1</span> of <span id="qTotal">0</span></span>
+        <span class="streak-badge" id="quizScore">0 pts</span>
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+        <p class="text-lg font-bold text-gray-800 mb-6" id="qText"></p>
+        <div id="options" class="space-y-3"></div>
+      </div>
+      <button id="nextQ" class="hidden w-full btn-primary py-3 text-lg">Next</button>
+    </div>
+
+    <div id="resultView" class="hidden text-center py-8">
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold text-coingreen mb-2">Lesson complete!</h2>
+      <p class="text-gray-600 mb-2">You earned <strong id="earnedXp">0</strong> XP</p>
+      <a href="/static/lessons.html" class="inline-block btn-primary mt-4 px-8">Back to lessons</a>
+    </div>
+  </main>
+
+  <script src="/static/js/api.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const lessonId = params.get('id') || '1';
+
+    let lessonContent = null;
+    let quiz = null;
+    let qIndex = 0;
+    let score = 0;
+    let lessonXp = 20;
+
+    async function loadLesson() {
+      const me = await getMe();
+      if (!me || !me.user) { window.location.href = '/static/login.html'; return; }
+      document.getElementById('navTitle').textContent = 'Lesson';
+      const content = await getLesson(lessonId);
+      if (!content) { document.getElementById('contentView').innerHTML = '<p class="text-gray-600">Lesson not found.</p>'; return; }
+      lessonContent = content;
+      document.getElementById('lessonTitle').textContent = content.title || 'Lesson';
+      const sections = content.sections || [];
+      document.getElementById('sections').innerHTML = sections.map(s => `
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <h3 class="font-bold text-coinblue mb-2">${s.title || s.heading || ''}</h3>
+          <p class="text-gray-700">${s.body || s.content || ''}</p>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('startQuiz').addEventListener('click', async () => {
+      const data = await getQuiz(lessonId);
+      quiz = (data && data.questions && data.questions.length) ? data : { questions: [] };
+      if (quiz.questions.length === 0) {
+        await completeLesson(lessonId, lessonXp);
+        document.getElementById('contentView').classList.add('hidden');
+        document.getElementById('resultView').classList.remove('hidden');
+        document.getElementById('earnedXp').textContent = lessonXp;
+        return;
+      }
+      document.getElementById('contentView').classList.add('hidden');
+      document.getElementById('quizView').classList.remove('hidden');
+      qIndex = 0;
+      score = 0;
+      showQuestion();
+    });
+
+    function showQuestion() {
+      const q = quiz.questions[qIndex];
+      if (!q) {
+        finishQuiz();
+        return;
+      }
+      document.getElementById('qNum').textContent = qIndex + 1;
+      document.getElementById('qTotal').textContent = quiz.questions.length;
+      document.getElementById('qText').textContent = q.text;
+      document.getElementById('quizScore').textContent = score + ' pts';
+      const opts = (q.options || []).map((opt, i) => `
+        <button type="button" class="option w-full text-left px-4 py-3 rounded-xl border-2 border-gray-200 hover:border-coinblue focus:outline-none font-medium" data-index="${i}">
+          ${opt}
+        </button>
+      `).join('');
+      document.getElementById('options').innerHTML = opts;
+      document.getElementById('nextQ').classList.add('hidden');
+      document.querySelectorAll('.option').forEach(btn => {
+        btn.addEventListener('click', () => pickOption(btn, q));
+      });
+    }
+
+    function pickOption(btn, q) {
+      document.querySelectorAll('.option').forEach(b => { b.disabled = true; });
+      const idx = parseInt(btn.dataset.index, 10);
+      const correct = q.correct === idx;
+      if (correct) {
+        score += 10;
+        btn.classList.add('border-coingreen', 'bg-green-50');
+      } else {
+        btn.classList.add('border-red-500', 'bg-red-50');
+        const correctBtn = document.querySelector(`.option[data-index="${q.correct}"]`);
+        if (correctBtn) correctBtn.classList.add('border-coingreen', 'bg-green-50');
+      }
+      document.getElementById('quizScore').textContent = score + ' pts';
+      if (qIndex < quiz.questions.length - 1) {
+        document.getElementById('nextQ').classList.remove('hidden');
+      } else {
+        document.getElementById('nextQ').textContent = 'Finish';
+        document.getElementById('nextQ').classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('nextQ').addEventListener('click', () => {
+      qIndex++;
+      if (qIndex >= quiz.questions.length) finishQuiz();
+      else showQuestion();
+    });
+
+    async function finishQuiz() {
+      const xp = lessonXp + Math.floor(score / 10);
+      await completeLesson(lessonId, xp);
+      document.getElementById('quizView').classList.add('hidden');
+      document.getElementById('resultView').classList.remove('hidden');
+      document.getElementById('earnedXp').textContent = xp;
+    }
+
+    loadLesson();
+  </script>
+</body>
+</html>
