@@ -5,72 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Account – Coinify</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/styles.css" />
-  <script>
-    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
-  </script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
-  <nav class="nav-bar">
-    <a href="/static/home.html" class="text-coinblue font-bold">← Back</a>
-    <span class="font-bold text-coinblue">Account</span>
-    <span class="w-12"></span>
-  </nav>
+<body>
+  <div class="grain-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
 
-  <main class="page pt-6">
-    <div class="flex items-center gap-4 mb-8">
-      <div class="coin-mascot coin-mascot-lg"></div>
+  <main class="page pt-8 space-y-8">
+    <div class="flex items-center gap-4">
+      <div class="coin-mascot coin-mascot-lg">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#FFD700" stroke="#B8860B" stroke-width="2"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#B8860B" stroke-width="1" stroke-dasharray="4 2"/>
+          <text x="50" y="65" text-anchor="middle" font-family="serif" font-size="40" fill="#B8860B">$</text>
+          <circle cx="35" cy="40" r="3" fill="#333"/>
+          <circle cx="65" cy="40" r="3" fill="#333"/>
+          <path d="M 40 55 Q 50 65 60 55" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div>
-        <h1 class="text-xl font-bold text-gray-800" id="displayName">Demo Learner</h1>
-        <p class="text-gray-600 text-sm" id="username">@demo</p>
+        <h1 class="serif text-2xl text-zinc-800" id="displayName">Demo Learner</h1>
+        <p class="mono text-sm text-gray-500" id="username">@demo</p>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-      <h2 class="font-bold text-coinblue mb-4">Stats</h2>
+    <div class="vellum-card p-6 rounded-2xl">
+      <h2 class="serif text-xl mb-4">Stats</h2>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <p class="text-2xl font-bold text-coinblue" id="level">1</p>
-          <p class="text-sm text-gray-600">Level</p>
+          <p class="text-2xl font-bold text-zinc-800 mono" id="level">1</p>
+          <p class="text-sm text-gray-500">Level</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-coingreen" id="xp">0</p>
-          <p class="text-sm text-gray-600">Total XP</p>
+          <p class="text-2xl font-bold text-emerald-600 mono" id="xp">0</p>
+          <p class="text-sm text-gray-500">Total XP</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-coinorange" id="streak">0</p>
-          <p class="text-sm text-gray-600">Day streak</p>
+          <p class="text-2xl font-bold text-amber-600 mono" id="streak">0</p>
+          <p class="text-sm text-gray-500">Day streak</p>
         </div>
         <div>
-          <p class="text-2xl font-bold text-coinpurple" id="maxStreak">0</p>
-          <p class="text-sm text-gray-600">Best streak</p>
+          <p class="text-2xl font-bold text-violet-600 mono" id="maxStreak">0</p>
+          <p class="text-sm text-gray-500">Best streak</p>
         </div>
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
-      <h2 class="font-bold text-coinblue mb-4">Badges</h2>
+    <div class="vellum-card p-6 rounded-2xl">
+      <h2 class="serif text-xl mb-4">Badges</h2>
       <div id="badges" class="flex flex-wrap gap-2"></div>
     </div>
 
-    <button id="logoutBtn" class="w-full btn-outline py-3">Log out</button>
+    <button id="logoutBtn" class="w-full py-3 rounded-full font-semibold border-2 border-zinc-300 text-zinc-700 hover:bg-zinc-100 transition-colors">Log out</button>
   </main>
 
-  <div class="bottom-nav">
-    <a href="/static/home.html">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Home
-    </a>
-    <a href="/static/lessons.html">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
-      Lessons
-    </a>
-    <a href="/static/account.html" class="active">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      Account
-    </a>
-  </div>
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <a href="/static/home.html">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </a>
+      <a href="/static/lessons.html">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Lessons
+      </a>
+      <a href="/static/account.html" class="active">
+        <div class="w-6 h-6 rounded-full bg-pink-200 border border-pink-300"></div>
+        Account
+      </a>
+    </div>
+  </nav>
 
   <script src="/static/js/api.js"></script>
   <script>
@@ -87,7 +93,7 @@
       document.getElementById('maxStreak').textContent = p.max_streak || 0;
       const names = { first_lesson: 'First lesson', streak_3: '3-day streak', streak_7: '7-day streak', all_lessons: 'All lessons', call_simulator: 'Call pro', quiz_master: 'Quiz master' };
       const badges = p.badges || [];
-      document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-3 py-1.5 rounded-full bg-coinyellow text-gray-800 text-sm font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges.</span>';
+      document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 text-sm font-bold border border-amber-200">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges.</span>';
     })();
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {

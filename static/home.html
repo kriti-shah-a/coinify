@@ -3,93 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Home – Coinify</title>
+  <title>Coinify | Home</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/styles.css" />
-  <script>
-    tailwind.config = { theme: { extend: { colors: { coinblue: '#134F6B', coinorange: '#FAA208', coinyellow: '#FFD500', coingreen: '#19C319', coinpurple: '#8332ac' }, fontFamily: { sans: ['Nunito', 'sans-serif'] } } } };
-  </script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
-  <nav class="nav-bar">
-    <span class="font-bold text-coinblue text-lg">Coinify</span>
-    <div class="flex items-center gap-3">
-      <span class="streak-badge" id="streak">🔥 0</span>
-      <span class="text-coinblue font-bold">Lv.<span id="level">1</span></span>
-    </div>
-  </nav>
+<body>
+  <div class="grain-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
 
-  <main class="page pt-6">
-    <div class="flex items-center gap-4 mb-6">
-      <div class="coin-mascot"></div>
+  <main class="page pt-8 space-y-8">
+    <div class="flex justify-between items-start">
       <div>
-        <h1 class="text-xl font-bold text-gray-800">Hi, <span id="userName">Learner</span>!</h1>
-        <p class="text-gray-600 text-sm">Ready to learn?</p>
+        <h2 class="serif text-3xl">Bonjour, <span id="userName">Learner</span></h2>
+        <p class="text-sm text-gray-500 italic">You're glowing today.</p>
+      </div>
+      <div class="vellum-card px-4 py-2 rounded-full flex items-center gap-2">
+        <span class="progress-leaf"></span>
+        <span class="mono text-xs font-bold" id="streak">0 DAY STREAK</span>
       </div>
     </div>
 
-    <div class="mb-6">
-      <div class="flex justify-between text-sm mb-1">
-        <span class="text-gray-600">Daily progress</span>
-        <span class="font-bold text-coinblue"><span id="xp">0</span> XP</span>
+    <div class="vellum-card p-6 rounded-2xl bg-[#fdfaf5] border-2 border-dashed border-emerald-200/60">
+      <div class="flex justify-between mb-4">
+        <span class="text-xs uppercase tracking-tighter font-bold">Current Growth</span>
+        <span class="mono text-xs" id="xp">0 c.</span>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="xpFill" style="width: 0%"></div>
+      <div class="h-4 w-full bg-white/50 rounded-full overflow-hidden border border-gray-100 p-0.5">
+        <div class="progress-fill h-full rounded-full" id="xpFill" style="width: 0%"></div>
       </div>
-      <p class="text-xs text-gray-500 mt-1"><span id="xpToNext">100</span> XP to next level</p>
+      <p class="mt-4 text-sm italic">"A little saved is a garden grown."</p>
+      <p class="mt-1 text-xs text-gray-500"><span id="xpToNext">100</span> to next level</p>
     </div>
 
-    <a href="/static/lessons.html" class="block w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-coingreen mb-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">📚</span>
-          <div>
-            <h2 class="font-bold text-gray-800">Lessons</h2>
-            <p class="text-sm text-gray-600">Learn budgeting & money basics</p>
+    <div>
+      <h3 class="serif text-xl mb-4">Today's Curations</h3>
+      <div class="grid grid-cols-1 gap-4">
+        <a href="/static/lessons.html" class="vellum-card p-5 rounded-xl cursor-pointer hover:-translate-y-1 transition-transform group block">
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="text-[10px] mono text-gray-400 block mb-1">LESSONS</span>
+              <h4 class="font-semibold text-lg">Budgeting & Money Basics</h4>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center group-hover:bg-rose-100">
+              <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7"></path></svg>
+            </div>
           </div>
-        </div>
-        <span class="text-coinblue font-bold">→</span>
-      </div>
-    </a>
+        </a>
 
-    <a href="/static/call-simulator.html" class="block w-full bg-white rounded-2xl p-5 shadow-sm border-2 border-gray-200 mb-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">📞</span>
-          <div>
-            <h2 class="font-bold text-gray-800">Call Simulator</h2>
-            <p class="text-sm text-gray-600">Final assessment – spot the scam</p>
+        <a href="/static/call-simulator.html" class="block bg-zinc-900 text-white p-6 rounded-2xl relative overflow-hidden group cursor-pointer hover:scale-[1.01] transition-transform">
+          <div class="absolute -right-4 -top-4 opacity-20 transform rotate-12">
+            <svg width="120" height="120" fill="white" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           </div>
-        </div>
-        <span class="text-gray-400 font-bold">→</span>
+          <h4 class="serif italic text-2xl mb-2">The Final Audit</h4>
+          <p class="text-sm text-zinc-400 mb-4">Face the assessor. Prove your knowledge in a live scenario call.</p>
+          <span class="text-xs mono border border-zinc-700 px-3 py-1 rounded-full group-hover:bg-white group-hover:text-black transition-colors">START CHALLENGE</span>
+        </a>
       </div>
-    </a>
-
-    <div class="flex gap-2 flex-wrap mt-6">
-      <span class="text-sm text-gray-600 font-semibold w-full">Badges</span>
-      <div id="badges" class="flex gap-2 flex-wrap"></div>
     </div>
-    <div class="flex gap-2 flex-wrap mt-6">
-      <span class="text-sm text-gray-600 font-semibold w-full">Locked Badges</span>
-      <div id="lockedBadges" class="flex gap-2 flex-wrap"></div>
+
+    <div>
+      <span class="text-[10px] mono text-gray-400 uppercase tracking-widest block mb-2">Badges</span>
+      <div id="badges" class="flex flex-wrap gap-2"></div>
+      <div id="lockedBadges" class="flex flex-wrap gap-2 mt-2"></div>
     </div>
   </main>
 
-  <div class="bottom-nav">
-    <a href="/static/home.html" class="active">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-      Home
-    </a>
-    <a href="/static/lessons.html">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
-      Lessons
-    </a>
-    <a href="/static/account.html">
-      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-      Account
-    </a>
-  </div>
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <a href="/static/home.html" class="active">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </a>
+      <a href="/static/lessons.html">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Lessons
+      </a>
+      <a href="/static/account.html">
+        <div class="w-6 h-6 rounded-full bg-pink-200 border border-pink-300"></div>
+        Account
+      </a>
+    </div>
+  </nav>
 
   <script src="/static/js/api.js"></script>
   <script>
@@ -98,18 +94,17 @@
       if (!me || !me.user) { window.location.href = '/static/login.html'; return; }
       const p = me.progress || {};
       document.getElementById('userName').textContent = me.user.display_name || me.user.username || 'Learner';
-      document.getElementById('level').textContent = p.level || 1;
-      document.getElementById('xp').textContent = p.xp || 0;
-      document.getElementById('streak').innerHTML = '🔥 ' + (p.current_streak || 0);
+      document.getElementById('xp').textContent = (p.xp || 0) + ' c.';
+      document.getElementById('streak').textContent = (p.current_streak || 0) + ' DAY STREAK';
       const xp = p.xp || 0;
       const xpInLevel = xp % 100;
       document.getElementById('xpFill').style.width = xpInLevel + '%';
-      document.getElementById('xpToNext').textContent = 100 - xpInLevel;
-      const badges = p.badges || [];
+      document.getElementById('xpToNext').textContent = (100 - xpInLevel) + ' c.';
       const names = { first_lesson: 'First lesson', streak_3: '3-day streak', streak_7: '7-day streak', all_lessons: 'All lessons', call_simulator: 'Call pro', quiz_master: 'Quiz master' };
-      document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-2 py-1 rounded-full bg-coinyellow text-gray-800 text-xs font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges!</span>';
-      const lockedBadges = Object.keys(names).filter(b => !badges.includes(b));
-      document.getElementById('lockedBadges').innerHTML = lockedBadges.length ? lockedBadges.map(b => `<span class="px-2 py-1 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">No locked badges!</span>';
+      const badges = p.badges || [];
+      document.getElementById('badges').innerHTML = badges.length ? badges.map(b => `<span class="px-2 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-200">${names[b] || b}</span>`).join('') : '<span class="text-gray-400 text-sm">Complete lessons to earn badges.</span>';
+      const lockedBadges = ['first_lesson','streak_3','streak_7','all_lessons','call_simulator','quiz_master'].filter(b => !badges.includes(b));
+      document.getElementById('lockedBadges').innerHTML = lockedBadges.length ? lockedBadges.map(b => `<span class="px-2 py-1 rounded-full bg-gray-200/80 text-gray-500 text-xs font-bold">${names[b] || b}</span>`).join('') : '';
     })();
   </script>
 </body>

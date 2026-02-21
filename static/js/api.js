@@ -63,6 +63,19 @@ async function getCallSimulatorAudio() {
   return apiGet('/api/call-simulator/audio');
 }
 
+/** Same as coinifydupe: POST /api/elevenlabs/speech with { text }, returns Response (audio/mpeg blob). */
+async function fetchElevenLabsSpeech(text) {
+  const url = (typeof window !== 'undefined' && window.location && window.location.origin)
+    ? window.location.origin + '/api/elevenlabs/speech'
+    : '/api/elevenlabs/speech';
+  return fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: (text || '').substring(0, 5000) }),
+    credentials: 'same-origin',
+  });
+}
+
 async function completeCallSimulator() {
   return apiPost('/api/call-simulator/complete');
 }

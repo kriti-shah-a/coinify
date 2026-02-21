@@ -3,48 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coinify – Learn money skills</title>
+  <title>Coinify | Financial Mastery</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/css/styles.css" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            coinblue: '#134F6B',
-            coinorange: '#FAA208',
-            coinyellow: '#FFD500',
-            coingreen: '#19C319',
-            coinpurple: '#8332ac',
-          },
-          fontFamily: { sans: ['Nunito', 'sans-serif'] },
-        },
-      },
-    };
-  </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-6 font-sans">
-  <div class="w-full max-w-sm flex flex-col items-center">
-    <div class="coin-mascot coin-mascot-lg mb-6"></div>
-    <h1 class="text-3xl font-extrabold text-coinblue mb-1">Coinify</h1>
-    <p class="text-gray-600 text-center mb-8">Learn money skills. One lesson at a time.</p>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="grain-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
+
+  <div class="vellum-card w-full max-w-md p-10 rounded-3xl relative overflow-hidden">
+    <div class="washi-tape"></div>
+    <div class="text-center mb-8">
+      <div class="coin-mascot inline-block mb-4">
+        <svg width="80" height="80" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="#FFD700" stroke="#B8860B" stroke-width="2"/>
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#B8860B" stroke-width="1" stroke-dasharray="4 2"/>
+          <text x="50" y="65" text-anchor="middle" font-family="serif" font-size="40" fill="#B8860B">$</text>
+          <circle cx="35" cy="40" r="3" fill="#333"/>
+          <circle cx="65" cy="40" r="3" fill="#333"/>
+          <path d="M 40 55 Q 50 65 60 55" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="serif text-4xl mb-2 italic">Coinify</h1>
+      <p class="text-sm uppercase tracking-widest text-gray-500 font-semibold">Your Financial Bloom</p>
+    </div>
 
     <div id="error" class="hidden text-red-600 text-sm mb-4 text-center"></div>
 
-    <form id="loginForm" class="w-full space-y-4">
+    <form id="loginForm" class="space-y-4">
       <input type="text" id="username" placeholder="Username" required
-        class="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-coinblue focus:outline-none" />
-      <input type="password" id="password" placeholder="Password" required
-        class="w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-coinblue focus:outline-none" />
-      <button type="submit" class="w-full btn-primary py-3 text-lg">
-        Start learning
+        class="w-full bg-white/50 border-b border-gray-300 p-4 focus:outline-none focus:border-amber-600 transition-colors italic" />
+      <input type="password" id="password" placeholder="Passcode" required
+        class="w-full bg-white/50 border-b border-gray-300 p-4 focus:outline-none focus:border-amber-600 transition-colors italic" />
+      <button type="submit" class="w-full mt-6 bg-zinc-900 text-white p-4 rounded-full font-semibold hover:bg-zinc-700 transition-all transform hover:scale-[1.02] shadow-xl">
+        Enter Workspace
       </button>
     </form>
 
-    <p class="mt-6 text-gray-500 text-sm text-center">
-      Demo: username <strong>demo</strong>, password <strong>demo</strong>
-    </p>
+    <p class="text-center mt-8 text-xs text-gray-400 mono">Demo: demo / demo • EST. 2024</p>
   </div>
 
   <script src="/static/js/api.js"></script>
@@ -58,9 +56,9 @@
       try {
         const data = await login(username, password);
         if (data && data.redirect) window.location.href = data.redirect;
-        else errEl.textContent = 'Login failed.'; errEl.classList.remove('hidden');
+        else { errEl.textContent = 'Login failed.'; errEl.classList.remove('hidden'); }
       } catch {
-        errEl.textContent = 'Invalid username or password.';
+        errEl.textContent = 'Invalid username or passcode.';
         errEl.classList.remove('hidden');
       }
     });

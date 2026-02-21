@@ -1,38 +1,81 @@
-"""Voice for call simulator via ElevenLabs; frontend falls back to speechSynthesis when no key."""
-
+"""Voice via ElevenLabs – same implementation as coinifydupe (REST with xi-api-key)."""
 import base64
-from pathlib import Path
+import os
 
 from config import ELEVENLABS_API_KEY
 
-# In-memory cache: script_id -> audio bytes (base64 or URL would be returned)
+VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel – same as coinifydupe
+URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
+
 _audio_cache: dict[str, bytes] = {}
+
+
+def _get_key() -> str:
+    return (ELEVENLABS_API_KEY or os.getenv("ELEVENLABS_API_KEY") or "").strip()
+
+
+def is_elevenlabs_available() -> bool:
+    return bool(_get_key())
+
 
 def get_voice_audio(script: str, script_id: str = "default") -> tuple[bool, str | None]:
     """
-    If ElevenLabs key is set, generate audio and return (True, base64_audio).
-    Otherwise return (False, None) so frontend uses speechSynthesis.
+    Same REST call as coinifydupe server.ts. Returns (True, base64_mp3) or (False, None).
     """
-    if not ELEVENLABS_API_KEY:
+    key = _get_key()
+    if not key:
         return False, None
     if script_id in _audio_cache:
-        return True, base64.b64encode(_audio_cache[script_id]).decode()
+        return True, base64.b64encode(_audio_cache[script_id]).decode("ascii")
     try:
         import httpx
-        # ElevenLabs text-to-speech (v1)
-        voice_id = "21m00Tcm4TlvDq8ikWAM"  # Rachel - default
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-        headers = {
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-            "xi-api-key": ELEVENLABS_API_KEY,
+        text = (script or "")[:5000]
+        payload = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.5,
+            },
         }
-        payload = {"text": script[:5000], "model_id": "eleven_monolingual_v1"}
-        with httpx.Client(timeout=30) as client:
-            r = client.post(url, json=payload, headers=headers)
-            if r.status_code == 200:
-                _audio_cache[script_id] = r.content
-                return True, base64.b64encode(r.content).decode()
+        headers = {
+            "Content-Type": "application/json",
+            "xi-api-key": key,
+        }
+        with httpx.Client(timeout=60) as client:
+            r = client.post(URL, json=payload, headers=headers)
+        if r.status_code == 200 and r.content:
+            _audio_cache[script_id] = r.content
+            return True, base64.b64encode(r.content).decode("ascii")
     except Exception:
         pass
     return False, None
+
+
+def get_voice_audio_bytes(script: str) -> bytes | None:
+    """Return raw MP3 bytes (for /api/elevenlabs/speech raw response like coinifydupe)."""
+    key = _get_key()
+    if not key:
+        return None
+    try:
+        import httpx
+        text = (script or "")[:5000]
+        payload = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.5,
+            },
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "xi-api-key": key,
+        }
+        with httpx.Client(timeout=60) as client:
+            r = client.post(URL, json=payload, headers=headers)
+        if r.status_code == 200 and r.content:
+            return r.content
+    except Exception:
+        pass
+    return None
