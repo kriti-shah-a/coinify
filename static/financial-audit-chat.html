@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Audit – Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <style>
+    .audit-card { border: 1px solid rgba(255,255,255,0.2); }
+    .chat-npc { max-width: 85%; align-self: flex-start; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 1rem 1rem 1rem 0.25rem; color: #e4e4e7; }
+    .chat-user { max-width: 85%; align-self: flex-end; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 1rem 1rem 0.25rem 1rem; color: #fff; }
+    .suggestion-btn { min-height: 48px; }
+  </style>
+</head>
+<body class="bg-zinc-900 text-white min-h-screen">
+  <div class="grain-overlay opacity-[0.02]">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
+
+  <main class="page pt-4 pb-4 max-w-lg mx-auto flex flex-col min-h-[calc(100vh-8rem)]">
+    <a href="/static/financial-audit.html" class="text-xs mono uppercase tracking-widest flex items-center gap-2 mb-4 text-zinc-400 hover:text-white transition-colors">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg> All scenarios
+    </a>
+
+    <!-- Title + progress + confidence -->
+    <div class="bg-zinc-800/80 p-4 rounded-xl audit-card mb-4 flex-shrink-0">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <h1 id="scenarioTitle" class="serif text-lg italic text-white truncate">—</h1>
+        <span class="mono text-xs font-bold text-zinc-400">Step <span id="stepNum">1</span></span>
+      </div>
+      <div class="h-1.5 w-full bg-zinc-700 rounded-full overflow-hidden mb-2">
+        <div id="progressBar" class="h-full bg-white rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+      <div class="flex items-center justify-between text-xs text-zinc-400">
+        <span>Confidence</span>
+        <span id="confidenceVal" class="mono font-bold text-white">50</span>
+      </div>
+      <div class="h-1.5 w-full bg-zinc-700 rounded-full overflow-hidden">
+        <div id="confidenceBar" class="h-full bg-zinc-400 rounded-full transition-all duration-300" style="width: 50%"></div>
+      </div>
+    </div>
+
+    <!-- Checklist (collapsible on mobile) -->
+    <div class="bg-zinc-800/80 p-3 rounded-xl audit-card mb-4 flex-shrink-0">
+      <p class="text-[10px] mono font-bold text-zinc-500 uppercase mb-2">Key questions</p>
+      <div id="checklist" class="flex flex-wrap gap-1 text-xs"></div>
+    </div>
+
+    <!-- Chat thread -->
+    <div id="chatWrap" class="flex-1 flex flex-col min-h-0 rounded-xl border border-zinc-700 bg-zinc-800/50 overflow-hidden">
+      <div id="chatThread" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
+        <!-- Messages appended here -->
+      </div>
+      <!-- Typing indicator -->
+      <div id="typingIndicator" class="hidden px-4 pb-2">
+        <div class="chat-npc px-4 py-2 text-sm text-zinc-500 italic">…</div>
+      </div>
+      <!-- Suggested replies (buttons) - stacked for easy tapping -->
+      <div id="suggestionsWrap" class="p-4 pt-0 border-t border-zinc-700 bg-zinc-800/80 flex-shrink-0">
+        <p class="text-[10px] mono text-zinc-500 uppercase mb-2">Say this</p>
+        <div id="suggestions" class="flex flex-col gap-2"></div>
+      </div>
+      <!-- Free text input (hidden by default) -->
+      <div id="freeTextWrap" class="hidden p-4 border-t border-zinc-700 bg-zinc-800/80 flex-shrink-0">
+        <input type="text" id="freeTextInput" placeholder="Type your response…" maxlength="500"
+          class="w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 text-sm" />
+        <button type="button" id="freeTextSend" class="w-full mt-2 py-2 rounded-full font-semibold text-zinc-900 bg-white hover:bg-zinc-200 text-sm">Send</button>
+      </div>
+    </div>
+
+    <!-- Coin mascot encouragement -->
+    <div id="coinEncourage" class="hidden mt-4 flex items-center gap-2 bg-zinc-800/80 p-3 rounded-xl audit-card flex-shrink-0">
+      <span class="text-2xl">🪙</span>
+      <p class="text-sm italic text-zinc-400">You got this!</p>
+    </div>
+  </main>
+
+  <!-- End screen -->
+  <div id="endScreen" class="hidden fixed inset-0 z-50 bg-zinc-900/98 flex items-center justify-center p-6 overflow-y-auto">
+    <div class="bg-zinc-800 p-6 rounded-2xl audit-card w-full max-w-md my-8 border border-zinc-700">
+      <h2 class="serif text-2xl italic text-white mb-4">Simulation complete</h2>
+      <div id="endScore" class="text-sm text-zinc-300 mb-4"></div>
+      <div id="endChecklist" class="text-sm text-zinc-400 mb-4"></div>
+      <p class="text-lg font-bold mb-2 text-white">You earned <span id="endXP" class="text-white">0</span> XP 🪙</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button type="button" id="saveScoreBtn" class="px-6 py-3 rounded-full font-semibold text-zinc-900 bg-white hover:bg-zinc-200">Save score</button>
+        <button type="button" id="playAgainBtn" class="px-6 py-3 rounded-full font-semibold border border-zinc-500 text-white hover:bg-zinc-700">Play again</button>
+        <a href="/static/financial-audit.html" class="px-6 py-3 rounded-full font-semibold border border-zinc-600 text-zinc-300 hover:bg-zinc-700">All scenarios</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/audit-sim.js"></script>
+  <script src="/static/js/leaderboard.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script>
+(function () {
+  var scenarioId = (new URLSearchParams(window.location.search)).get('scenario') || 'salary';
+  var scenario = AuditSim.getScenario(scenarioId);
+  if (!scenario) {
+    window.location.href = '/static/financial-audit.html';
+    return;
+  }
+
+  var state = AuditSim.initState(scenarioId);
+  var maxSteps = 10;
+
+  function renderChecklist() {
+    var prog = AuditSim.getChecklistProgress(state);
+    var items = scenario.checklistItems || [];
+    var el = document.getElementById('checklist');
+    el.innerHTML = items.map(function (item) {
+      var hit = state.checklistHit[item.id];
+      return '<span class="px-2 py-0.5 rounded-full ' + (hit ? 'bg-white/20 text-emerald-300 border border-emerald-500/50' : 'bg-zinc-700/50 text-zinc-500 border border-zinc-600') + '">' + (hit ? '✓ ' : '') + item.label + '</span>';
+    }).join('');
+  }
+
+  function renderProgress() {
+    document.getElementById('stepNum').textContent = state.turnCount + 1;
+    document.getElementById('progressBar').style.width = Math.min(100, (state.turnCount / maxSteps) * 100) + '%';
+    document.getElementById('confidenceVal').textContent = state.confidence;
+    document.getElementById('confidenceBar').style.width = state.confidence + '%';
+    document.getElementById('confidenceBar').className = 'h-full rounded-full transition-all duration-300 ' + (state.confidence >= 50 ? 'bg-emerald-400' : state.confidence >= 25 ? 'bg-amber-400' : 'bg-red-400');
+  }
+
+  function appendMessage(role, text) {
+    var thread = document.getElementById('chatThread');
+    var div = document.createElement('div');
+    div.className = role === 'npc' ? 'chat-npc px-4 py-2 text-sm' : 'chat-user px-4 py-2 text-sm';
+    div.textContent = text;
+    thread.appendChild(div);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function showTyping(show) {
+    document.getElementById('typingIndicator').classList.toggle('hidden', !show);
+    if (show) document.getElementById('chatThread').scrollTop = document.getElementById('chatThread').scrollHeight;
+  }
+
+  function playNPCVoice(text, callback) {
+    if (!window.fetchElevenLabsSpeech || !text) { if (callback) callback(); return; }
+    fetchElevenLabsSpeech(text).then(function (res) {
+      if (!res || !res.ok) { if (callback) callback(); return; }
+      return res.blob();
+    }).then(function (blob) {
+      if (!blob) { if (callback) callback(); return; }
+      var url = URL.createObjectURL(blob);
+      var audio = new Audio(url);
+      audio.onended = function () { URL.revokeObjectURL(url); if (callback) callback(); };
+      audio.onerror = function () { if (callback) callback(); };
+      audio.play().catch(function () { if (callback) callback(); });
+    }).catch(function () { if (callback) callback(); });
+  }
+
+  function showNode(node) {
+    if (!node) return;
+    state.transcript.push({ role: 'npc', text: node.npcMessage });
+    appendMessage('npc', node.npcMessage);
+    showTyping(false);
+    renderProgress();
+    renderChecklist();
+
+    if (AuditSim.isEnd(state) || state.currentNodeId === 'end') {
+      showEndScreen();
+      return;
+    }
+
+    var suggestionsWrap = document.getElementById('suggestionsWrap');
+    var freeTextWrap = document.getElementById('freeTextWrap');
+    var suggestions = document.getElementById('suggestions');
+
+    if (node.freeTextExpectedKeywords) {
+      suggestionsWrap.classList.add('hidden');
+      freeTextWrap.classList.remove('hidden');
+      document.getElementById('freeTextInput').value = '';
+      document.getElementById('freeTextInput').focus();
+      return;
+    }
+
+    freeTextWrap.classList.add('hidden');
+    suggestionsWrap.classList.remove('hidden');
+    suggestions.innerHTML = (node.choices || []).map(function (c, i) {
+      return '<button type="button" class="suggestion-btn w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-800 text-sm font-medium text-white hover:bg-zinc-700 active:bg-zinc-600 transition-colors text-left" data-index="' + i + '">' + c.label + '</button>';
+    }).join('');
+
+    suggestions.querySelectorAll('.suggestion-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(btn.dataset.index, 10);
+        choose(idx);
+      });
+    });
+
+    document.getElementById('coinEncourage').classList.remove('hidden');
+  }
+
+  function choose(choiceIndex) {
+    var node = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+    if (!node || !node.choices || !node.choices[choiceIndex]) return;
+    var choice = node.choices[choiceIndex];
+    state = AuditSim.advance(state, choiceIndex);
+    appendMessage('user', choice.userText);
+    renderProgress();
+    renderChecklist();
+    var nextNode = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+    if (!nextNode) { showEndScreen(); return; }
+    showTyping(true);
+    setTimeout(function () {
+      showNode(nextNode);
+      if (nextNode.npcAudioText) playNPCVoice(nextNode.npcAudioText);
+    }, 600);
+  }
+
+  document.getElementById('freeTextSend').addEventListener('click', function () {
+    var input = document.getElementById('freeTextInput');
+    var text = (input.value || '').trim();
+    if (!text) return;
+    var node = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+    state = AuditSim.advance(state, null, text);
+    appendMessage('user', text);
+    input.value = '';
+    renderProgress();
+    renderChecklist();
+    var nextNode = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+    if (!nextNode) { showEndScreen(); return; }
+    showTyping(true);
+    setTimeout(function () { showNode(nextNode); }, 600);
+  });
+
+  document.getElementById('freeTextInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('freeTextSend').click();
+  });
+
+  function showEndScreen() {
+    document.getElementById('endScreen').classList.remove('hidden');
+    var xp = AuditSim.computeXP(state);
+    document.getElementById('endXP').textContent = xp;
+    var prog = AuditSim.getChecklistProgress(state);
+    document.getElementById('endScore').innerHTML = '<p><strong>Score:</strong> ' + state.score + '</p><p><strong>Confidence:</strong> ' + state.confidence + '</p>';
+    document.getElementById('endChecklist').innerHTML = '<p><strong>Key questions hit:</strong> ' + prog.hit.length + ' / ' + prog.total + '</p>';
+    document.getElementById('suggestionsWrap').classList.add('hidden');
+    document.getElementById('freeTextWrap').classList.add('hidden');
+  }
+
+  document.getElementById('saveScoreBtn').addEventListener('click', function () {
+    var name = getPlayerName() || 'Hero';
+    if (!getPlayerName()) setPlayerName(name);
+    var xp = parseInt(document.getElementById('endXP').textContent, 10);
+    addScore(name, xp);
+    AuditSim.setAuditBadge(scenarioId);
+    window.location.href = '/static/financial-audit.html';
+  });
+
+  document.getElementById('playAgainBtn').addEventListener('click', function () {
+    state = AuditSim.initState(scenarioId);
+    document.getElementById('endScreen').classList.add('hidden');
+    document.getElementById('chatThread').innerHTML = '';
+    document.getElementById('suggestionsWrap').classList.remove('hidden');
+    document.getElementById('freeTextWrap').classList.add('hidden');
+    var firstNode = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+    showNode(firstNode);
+    if (firstNode && firstNode.npcAudioText) playNPCVoice(firstNode.npcAudioText);
+  });
+
+  document.getElementById('scenarioTitle').textContent = scenario.name;
+  renderChecklist();
+  renderProgress();
+  var firstNode = AuditSim.getNode(state.scenarioId, state.currentNodeId);
+  showNode(firstNode);
+  if (firstNode && firstNode.npcAudioText) playNPCVoice(firstNode.npcAudioText);
+})();
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scam Squad – Coinify Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <style>.arcade-purple { color: #8332ac; } .arcade-card { border: 2px dashed rgba(131, 50, 172, 0.3); } .flag { cursor: pointer; border-bottom: 2px dotted #dc2626; } .flag.tapped { background: rgba(220, 38, 38, 0.2); }</style>
+</head>
+<body>
+  <div class="grain-overlay"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg></div>
+
+  <main class="page pt-8 pb-12 max-w-lg mx-auto">
+    <a href="/static/financial-arcade.html" class="text-xs mono uppercase tracking-widest flex items-center gap-2 mb-6 text-zinc-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg> Arcade
+    </a>
+
+    <!-- Title card -->
+    <div class="vellum-card p-5 rounded-2xl arcade-card mb-4">
+      <div class="flex items-center gap-2"><span class="text-xl">🕵️</span><h1 class="serif text-2xl italic arcade-purple">Scam Squad</h1></div>
+      <p class="text-sm text-gray-600 mt-1">Spot the red flags: tap underlined phrases that are scammy (urgent tone, gift cards, weird domain). Wrong taps cost points!</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="vellum-card p-4 rounded-xl arcade-card mb-4">
+      <p class="text-xs font-semibold text-zinc-600 uppercase mb-2">How to play</p>
+      <p class="text-sm text-gray-600">A fake message appears. Tap only the <strong>red-flag</strong> phrases (dotted underline). Each correct tap +10, wrong tap -5. Countdown timer. When done, tap "Done spotting".</p>
+    </div>
+
+    <!-- Game area -->
+    <div id="gameArea" class="vellum-card p-5 rounded-2xl arcade-card mb-4">
+      <div class="flex justify-between items-center mb-4">
+        <span class="mono text-sm font-bold text-zinc-600">Time: <span id="timer">60</span>s</span>
+        <span class="mono text-sm font-bold arcade-purple">Score: <span id="score">0</span></span>
+      </div>
+      <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden mb-4">
+        <div id="timerBar" class="h-full bg-[#8332ac] rounded-full transition-all duration-100" style="width: 100%"></div>
+      </div>
+
+      <div id="messageBox" class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-zinc-700 leading-relaxed mb-4">
+        <!-- Message with tappable spans injected by JS -->
+      </div>
+      <button type="button" id="doneSpotting" class="w-full py-3 rounded-full font-semibold text-white bg-[#8332ac] hover:opacity-90">Done spotting</button>
+    </div>
+
+    <!-- Result -->
+    <div id="resultArea" class="vellum-card p-6 rounded-2xl arcade-card hidden text-center">
+      <p id="resultText" class="text-lg font-bold mb-4"></p>
+      <p class="text-sm text-gray-600 mb-4">You won <span id="resultCoins" class="font-bold arcade-purple">0</span> coins! 🪙</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button type="button" id="saveScoreBtn" class="px-6 py-3 rounded-full font-semibold text-white bg-[#8332ac] hover:opacity-90">Save score</button>
+        <button type="button" id="playAgainBtn" class="px-6 py-3 rounded-full font-semibold border-2 border-[#8332ac] arcade-purple hover:bg-purple-50">Play again</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/static/js/leaderboard.js"></script>
+  <script>
+(function () {
+  var POINTS = 20;
+  var GAME_TIME = 60;
+  var CORRECT_PTS = 10;
+  var WRONG_PTS = -5;
+
+  var MESSAGES = [
+    { body: 'Your account will be LOCKED in 1 hour! Click here NOW to verify. We need your password and SSN. Reply with gift cards to unlock.', flags: ['LOCKED in 1 hour', 'NOW', 'password and SSN', 'gift cards'] },
+    { body: 'Congratulations! You won $1,000,000! Send $500 in iTunes gift cards to claim. Urgent: act in 24 hours or forfeit.', flags: ['won $1,000,000', 'iTunes gift cards', 'Urgent', '24 hours'] },
+    { body: 'Hi this is Microsoft support. Your PC has a virus. Call this number immediately: 555-0199. We will need remote access and your credit card.', flags: ['Microsoft support', 'immediately', 'remote access', 'credit card'] },
+    { body: 'Your bank account has suspicious activity. Log in at secure-bank-xyz.ru to verify. Do not delay or we close your account.', flags: ['secure-bank-xyz.ru', 'Do not delay', 'close your account'] },
+    { body: 'Grandma! I\'m in jail in Mexico! Send $2,000 via wire RIGHT NOW. Don\'t tell Mom. Use Western Union only.', flags: ['RIGHT NOW', 'Don\'t tell Mom', 'Western Union only'] }
+  ];
+
+  var score = 0;
+  var timeLeft = GAME_TIME;
+  var timerId = null;
+  var currentFlags = [];
+  var tapped = {};
+  var gameOver = false;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function escapeHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function buildMessage(msg) {
+    var body = msg.body;
+    var parts = [];
+    var last = 0;
+    var sorted = msg.flags.slice().map(function (phrase) {
+      var idx = body.indexOf(phrase);
+      return { phrase: phrase, idx: idx };
+    }).filter(function (p) { return p.idx !== -1; }).sort(function (a, b) { return a.idx - b.idx; });
+    for (var i = 0; i < sorted.length; i++) {
+      var p = sorted[i];
+      if (p.idx < last) continue;
+      parts.push(escapeHtml(body.substring(last, p.idx)));
+      parts.push('<span class="flag" data-flag="' + escapeHtml(p.phrase) + '">' + escapeHtml(p.phrase) + '</span>');
+      last = p.idx + p.phrase.length;
+    }
+    parts.push(escapeHtml(body.substring(last)));
+    return parts.join('');
+  }
+
+  function pickMessage() {
+    return MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+  }
+
+  function startGame() {
+    var msg = pickMessage();
+    currentFlags = msg.flags.slice();
+    tapped = {};
+    score = 0;
+    timeLeft = GAME_TIME;
+    gameOver = false;
+    document.getElementById('gameArea').classList.remove('hidden');
+    document.getElementById('resultArea').classList.add('hidden');
+    document.getElementById('score').textContent = '0';
+    document.getElementById('timer').textContent = timeLeft;
+    document.getElementById('timerBar').style.width = '100%';
+    document.getElementById('messageBox').innerHTML = buildMessage(msg);
+    document.querySelectorAll('#messageBox .flag').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (gameOver) return;
+        var phrase = this.dataset.flag;
+        if (this.classList.contains('tapped')) return;
+        this.classList.add('tapped');
+        if (currentFlags.indexOf(phrase) !== -1) {
+          score += CORRECT_PTS;
+        } else {
+          score += WRONG_PTS;
+        }
+        document.getElementById('score').textContent = Math.max(0, score);
+      });
+    });
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(function () {
+      timeLeft--;
+      document.getElementById('timer').textContent = timeLeft;
+      document.getElementById('timerBar').style.width = (timeLeft / GAME_TIME) * 100 + '%';
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function endGame() {
+    gameOver = true;
+    if (timerId) clearInterval(timerId);
+    document.getElementById('gameArea').classList.add('hidden');
+    document.getElementById('resultArea').classList.remove('hidden');
+    var finalScore = Math.max(0, score);
+    var coins = finalScore >= 20 ? POINTS : Math.floor(POINTS * finalScore / 30);
+    document.getElementById('resultText').textContent = 'Final score: ' + finalScore + ' (correct taps +10, wrong -5).';
+    document.getElementById('resultText').className = 'text-lg font-bold mb-4 arcade-purple';
+    document.getElementById('resultCoins').textContent = coins;
+  }
+
+  document.getElementById('doneSpotting').addEventListener('click', endGame);
+
+  document.getElementById('saveScoreBtn').addEventListener('click', function () {
+    var name = getPlayerName() || 'Hero';
+    if (!getPlayerName()) setPlayerName(name);
+    var coins = parseInt(document.getElementById('resultCoins').textContent, 10);
+    addScore(name, coins);
+    window.location.href = '/static/financial-arcade.html';
+  });
+
+  document.getElementById('playAgainBtn').addEventListener('click', startGame);
+
+  startGame();
+})();
+  </script>
+</body>
+</html>
