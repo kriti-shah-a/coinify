@@ -21,19 +21,19 @@ else:
 
 def get_lessons() -> list[dict]:
     """Return list of lessons (from Gemini or mock)."""
-    if _model:
-        try:
-            prompt = """You are a financial literacy educator. Return a JSON array of 5 short lessons for beginners. Each object: "id" (string 1-5), "title", "description" (one sentence), "icon" (single emoji), "xp" (number 20-35), "order" (1-5). Only valid JSON, no markdown."""
-            r = _model.generate_content(prompt)
-            text = r.text.strip()
-            if "```" in text:
-                text = re.sub(r"^```\w*\n?", "", text).replace("```", "").strip()
-            data = json.loads(text)
-            if isinstance(data, list) and len(data) >= 1:
-                return data
-        except Exception as e:
-            print("Gemini failed get_lessons", e)
-            pass
+    # if _model:
+    #     try:
+    #         prompt = """You are a financial literacy educator. Return a JSON array of 5 short lessons for beginners. Each object: "id" (string 1-5), "title", "description" (one sentence), "icon" (single emoji), "xp" (number 20-35), "order" (1-5). Only valid JSON, no markdown."""
+    #         r = _model.generate_content(prompt)
+    #         text = r.text.strip()
+    #         if "```" in text:
+    #             text = re.sub(r"^```\w*\n?", "", text).replace("```", "").strip()
+    #         data = json.loads(text)
+    #         if isinstance(data, list) and len(data) >= 1:
+    #             return data
+    #     except Exception as e:
+    #         print("Gemini failed get_lessons", e)
+    #         pass
     return LESSONS
 
 
@@ -50,6 +50,7 @@ def get_lesson_content(lesson_id: str) -> dict | None:
         except Exception as e:
             print("Gemini failed get_lesson_content", e)
             pass
+    print(f"Using mock content for lesson {lesson_id}")
     return LESSON_CONTENT.get(lesson_id)
 
 
