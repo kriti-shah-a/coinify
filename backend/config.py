@@ -20,5 +20,7 @@ DEMO_USER = {
 }
 
 # API keys (optional)
+#GEMINI_API_KEY = "AIzaSyBWj1TzM6i07vtsMqhi27rz-DMlsDXhZCs"
+
 GEMINI_API_KEY = "AIzaSyAxNnIoIEx1Yp-WGFWimg_WNg0DKToj8TE"
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY", "")

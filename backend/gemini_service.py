@@ -69,4 +69,5 @@ def get_adaptive_quiz(lesson_id: str, topic: str, num_questions: int = 3) -> dic
         except Exception as e:
             print("Gemini failed get_adaptive_quiz", e)
             pass
+    print(f"Using mock quiz for lesson {lesson_id} (topic: {topic})")
     return MOCK_QUIZ
