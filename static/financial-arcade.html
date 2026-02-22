@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Arcade – Coinify</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <style>
+    .arcade-purple { color: #8332ac; }
+    .arcade-purple-bg { background-color: #8332ac; }
+    .arcade-card { border: 2px dashed rgba(131, 50, 172, 0.3); }
+  </style>
+</head>
+<body>
+  <div class="grain-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg>
+  </div>
+
+  <main class="page pt-8 pb-28">
+    <a href="/static/home.html" class="text-xs mono uppercase tracking-widest flex items-center gap-2 mb-6 text-zinc-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg> Back
+    </a>
+
+    <div class="vellum-card p-6 rounded-2xl arcade-card mb-8">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-2xl">🪙</span>
+        <h1 class="serif text-2xl md:text-3xl italic arcade-purple">Financial Arcade</h1>
+      </div>
+      <p class="text-sm text-gray-600 mb-4">Play mini-games, earn coins, and climb the leaderboard. No backend—just you vs your high score.</p>
+
+      <div id="nameSection" class="flex flex-wrap items-center gap-2">
+        <label class="text-sm font-semibold text-zinc-700">Your name:</label>
+        <input type="text" id="playerName" placeholder="Arcade hero" maxlength="20"
+          class="flex-1 min-w-[120px] px-3 py-2 rounded-lg border-2 border-dashed border-[#8332ac]/40 bg-white/60 focus:outline-none focus:border-[#8332ac] text-sm" />
+        <button type="button" id="saveNameBtn" class="px-4 py-2 rounded-full text-sm font-semibold text-white arcade-purple-bg hover:opacity-90">Save</button>
+      </div>
+      <p id="nameDisplay" class="text-sm text-gray-500 hidden">Playing as <strong id="nameDisplayValue" class="arcade-purple"></strong> <button type="button" id="changeNameBtn" class="text-xs underline ml-1">Change</button></p>
+    </div>
+
+    <h2 class="serif text-xl mb-6">Pick a game</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-12">
+      <a href="/static/minigames/budget-blitz.html" class="vellum-card p-6 rounded-xl arcade-card hover:-translate-y-1 transition-transform block group">
+        <div class="flex justify-between items-start gap-4">
+          <div class="min-w-0">
+            <span class="text-[10px] mono text-gray-400 block mb-2">30 pts</span>
+            <h3 class="font-semibold text-lg text-zinc-800 group-hover:arcade-purple">Budget Blitz</h3>
+            <p class="text-xs text-gray-500 mt-2">Split your paycheck into buckets. Fast.</p>
+          </div>
+          <span class="text-2xl flex-shrink-0">💰</span>
+        </div>
+      </a>
+      <a href="/static/minigames/credit-quest.html" class="vellum-card p-6 rounded-xl arcade-card hover:-translate-y-1 transition-transform block group">
+        <div class="flex justify-between items-start gap-4">
+          <div class="min-w-0">
+            <span class="text-[10px] mono text-gray-400 block mb-2">25 pts</span>
+            <h3 class="font-semibold text-lg text-zinc-800 group-hover:arcade-purple">Credit Quest</h3>
+            <p class="text-xs text-gray-500 mt-2">Order the steps to build good credit.</p>
+          </div>
+          <span class="text-2xl flex-shrink-0">📜</span>
+        </div>
+      </a>
+      <a href="/static/minigames/scam-squad.html" class="vellum-card p-6 rounded-xl arcade-card hover:-translate-y-1 transition-transform block group">
+        <div class="flex justify-between items-start gap-4">
+          <div class="min-w-0">
+            <span class="text-[10px] mono text-gray-400 block mb-2">20 pts</span>
+            <h3 class="font-semibold text-lg text-zinc-800 group-hover:arcade-purple">Scam Squad</h3>
+            <p class="text-xs text-gray-500 mt-2">Spot the red flags in messages.</p>
+          </div>
+          <span class="text-2xl flex-shrink-0">🕵️</span>
+        </div>
+      </a>
+      <a href="/static/minigames/needs-vs-wants.html" class="vellum-card p-6 rounded-xl arcade-card hover:-translate-y-1 transition-transform block group">
+        <div class="flex justify-between items-start gap-4">
+          <div class="min-w-0">
+            <span class="text-[10px] mono text-gray-400 block mb-2">15 pts</span>
+            <h3 class="font-semibold text-lg text-zinc-800 group-hover:arcade-purple">Needs vs Wants</h3>
+            <p class="text-xs text-gray-500 mt-2">Tap Needs only. Resist the rest.</p>
+          </div>
+          <span class="text-2xl flex-shrink-0">🛒</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="vellum-card p-6 rounded-2xl arcade-card">
+      <h2 class="serif text-xl mb-4 arcade-purple">🏆 Leaderboard</h2>
+      <div id="leaderboard"></div>
+      <a href="/static/leaderboard.html" class="inline-block mt-4 text-sm font-semibold arcade-purple underline">Full leaderboard</a>
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <a href="/static/home.html">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </a>
+      <a href="/static/lessons.html">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Lessons
+      </a>
+      <a href="/static/financial-arcade.html" class="active">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        MiniGames
+      </a>
+      <a href="/static/account.html">
+        <div class="w-6 h-6 rounded-full bg-pink-200 border border-pink-300"></div>
+        Account
+      </a>
+    </div>
+  </nav>
+
+  <script src="/static/js/leaderboard.js"></script>
+  <script>
+    (function () {
+      var nameInput = document.getElementById('playerName');
+      var saveBtn = document.getElementById('saveNameBtn');
+      var nameDisplay = document.getElementById('nameDisplay');
+      var nameDisplayValue = document.getElementById('nameDisplayValue');
+      var changeNameBtn = document.getElementById('changeNameBtn');
+      var nameSection = document.getElementById('nameSection');
+
+      function showNameState() {
+        var name = getPlayerName();
+        if (name) {
+          nameSection.classList.add('hidden');
+          nameDisplay.classList.remove('hidden');
+          nameDisplayValue.textContent = name;
+        } else {
+          nameSection.classList.remove('hidden');
+          nameDisplay.classList.add('hidden');
+        }
+      }
+
+      saveBtn.addEventListener('click', function () {
+        var n = (nameInput.value || '').trim();
+        if (n) {
+          setPlayerName(n);
+          showNameState();
+        }
+      });
+
+      changeNameBtn.addEventListener('click', function () {
+        setPlayerName('');
+        nameInput.value = '';
+        showNameState();
+        nameSection.classList.remove('hidden');
+      });
+
+      showNameState();
+      if (getPlayerName()) nameInput.value = getPlayerName();
+      renderLeaderboard('leaderboard');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Needs vs Wants – Coinify Arcade</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <style>.arcade-purple { color: #8332ac; } .arcade-card { border: 2px dashed rgba(131, 50, 172, 0.3); }</style>
+</head>
+<body>
+  <div class="grain-overlay"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#noiseFilter)"/></svg></div>
+
+  <main class="page pt-8 pb-12 max-w-lg mx-auto">
+    <a href="/static/financial-arcade.html" class="text-xs mono uppercase tracking-widest flex items-center gap-2 mb-6 text-zinc-700">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg> Arcade
+    </a>
+
+    <!-- Title card -->
+    <div class="vellum-card p-5 rounded-2xl arcade-card mb-4">
+      <div class="flex items-center gap-2"><span class="text-xl">🛒</span><h1 class="serif text-2xl italic arcade-purple">Needs vs Wants</h1></div>
+      <p class="text-sm text-gray-600 mt-1">Sorting race: tap Need (left) or Want (right) before time runs out. You saved $X by choosing needs first!</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="vellum-card p-4 rounded-xl arcade-card mb-4">
+      <p class="text-xs font-semibold text-zinc-600 uppercase mb-2">How to play</p>
+      <p class="text-sm text-gray-600">12 cards appear one-by-one. Tap <strong>Need</strong> (left) or <strong>Want</strong> (right). You have 30 seconds. Score = correct answers + bonus for speed. Wrong taps don’t advance the card.</p>
+    </div>
+
+    <!-- Game area -->
+    <div id="gameArea" class="vellum-card p-5 rounded-2xl arcade-card mb-4">
+      <div class="flex justify-between items-center mb-4">
+        <span class="mono text-sm font-bold text-zinc-600">Time: <span id="timer">30</span>s</span>
+        <span class="mono text-sm font-bold arcade-purple">Score: <span id="score">0</span> / <span id="totalCards">12</span></span>
+      </div>
+      <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden mb-4">
+        <div id="timerBar" class="h-full bg-[#8332ac] rounded-full transition-all duration-100" style="width: 100%"></div>
+      </div>
+
+      <div id="cardArea" class="min-h-[120px] flex flex-col items-center justify-center py-6">
+        <p id="cardText" class="text-xl font-bold text-center text-zinc-800 mb-6 px-4">—</p>
+        <div class="flex gap-4">
+          <button type="button" id="btnNeed" class="px-8 py-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-lg hover:bg-emerald-100">Need</button>
+          <button type="button" id="btnWant" class="px-8 py-4 rounded-xl border-2 border-amber-500 bg-amber-50 text-amber-800 font-bold text-lg hover:bg-amber-100">Want</button>
+        </div>
+      </div>
+      <p class="text-xs text-center text-gray-500 mt-2">Card <span id="cardNum">0</span> of 12</p>
+    </div>
+
+    <!-- Result -->
+    <div id="resultArea" class="vellum-card p-6 rounded-2xl arcade-card hidden text-center">
+      <p id="resultText" class="text-lg font-bold mb-4"></p>
+      <p class="text-sm text-gray-600 mb-4">You won <span id="resultCoins" class="font-bold arcade-purple">0</span> coins! 🪙</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <button type="button" id="saveScoreBtn" class="px-6 py-3 rounded-full font-semibold text-white bg-[#8332ac] hover:opacity-90">Save score</button>
+        <button type="button" id="playAgainBtn" class="px-6 py-3 rounded-full font-semibold border-2 border-[#8332ac] arcade-purple hover:bg-purple-50">Play again</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/static/js/leaderboard.js"></script>
+  <script>
+(function () {
+  var POINTS = 15;
+  var TOTAL_TIME = 30;
+  var CARDS = [
+    { text: 'Rent', need: true },
+    { text: 'Groceries', need: true },
+    { text: 'Netflix', need: false },
+    { text: 'Electric bill', need: true },
+    { text: 'New sneakers', need: false },
+    { text: 'Medicine', need: true },
+    { text: 'Restaurant dinner', need: false },
+    { text: 'Gas for car', need: true },
+    { text: 'Phone plan', need: true },
+    { text: 'Concert tickets', need: false },
+    { text: 'Water bill', need: true },
+    { text: 'Designer bag', need: false }
+  ];
+
+  var deck = [];
+  var index = 0;
+  var correct = 0;
+  var timeLeft = TOTAL_TIME;
+  var timerId = null;
+  var gameOver = false;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function startGame() {
+    deck = shuffle(CARDS.slice());
+    index = 0;
+    correct = 0;
+    timeLeft = TOTAL_TIME;
+    gameOver = false;
+    document.getElementById('gameArea').classList.remove('hidden');
+    document.getElementById('resultArea').classList.add('hidden');
+    document.getElementById('totalCards').textContent = deck.length;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('timer').textContent = timeLeft;
+    document.getElementById('timerBar').style.width = '100%';
+    nextCard();
+    startTimer();
+  }
+
+  function startTimer() {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(function () {
+      timeLeft--;
+      document.getElementById('timer').textContent = timeLeft;
+      document.getElementById('timerBar').style.width = (timeLeft / TOTAL_TIME) * 100 + '%';
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        endGame();
+      }
+    }, 1000);
+  }
+
+  function nextCard() {
+    if (index >= deck.length) {
+      endGame();
+      return;
+    }
+    var card = deck[index];
+    document.getElementById('cardText').textContent = card.text;
+    document.getElementById('cardNum').textContent = index + 1;
+  }
+
+  function answer(isNeed) {
+    if (gameOver || index >= deck.length) return;
+    var card = deck[index];
+    if (card.need === isNeed) {
+      correct++;
+      document.getElementById('score').textContent = correct;
+    }
+    index++;
+    if (index >= deck.length) {
+      clearInterval(timerId);
+      endGame();
+    } else {
+      nextCard();
+    }
+  }
+
+  function endGame() {
+    gameOver = true;
+    if (timerId) clearInterval(timerId);
+    document.getElementById('gameArea').classList.add('hidden');
+    document.getElementById('resultArea').classList.remove('hidden');
+    var saved = correct * 5; // fake "you saved $X"
+    document.getElementById('resultText').textContent = 'You got ' + correct + ' of ' + deck.length + ' correct. You saved $' + saved + ' by choosing needs first!';
+    document.getElementById('resultText').className = 'text-lg font-bold mb-4 arcade-purple';
+    document.getElementById('resultCoins').textContent = correct >= deck.length * 0.7 ? POINTS : Math.floor(POINTS * correct / deck.length);
+  }
+
+  document.getElementById('btnNeed').addEventListener('click', function () { answer(true); });
+  document.getElementById('btnWant').addEventListener('click', function () { answer(false); });
+
+  document.getElementById('saveScoreBtn').addEventListener('click', function () {
+    var name = getPlayerName() || 'Hero';
+    if (!getPlayerName()) setPlayerName(name);
+    var coins = parseInt(document.getElementById('resultCoins').textContent, 10);
+    addScore(name, coins);
+    window.location.href = '/static/financial-arcade.html';
+  });
+
+  document.getElementById('playAgainBtn').addEventListener('click', startGame);
+
+  startGame();
+})();
+  </script>
+</body>
+</html>

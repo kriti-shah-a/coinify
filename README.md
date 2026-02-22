@@ -1,17 +1,38 @@
 # Coinify
 
-A Duolingo-style financial literacy app: lessons, mini-game quizzes, and a “Call Simulator” final assessment. Built for hackathons with optional AI (Gemini) and voice (ElevenLabs); **runs fully locally with no API keys**.
+**Where money skills become superpowers.**
+
+### What Inspired This Project
+
+In American high schools, financial literacy is barely covered.
+
+Students graduate knowing advanced math, but not how interest compounds, how loans work, or how to negotiate pay.
+
+Finance today feels overwhelming and exclusive. And many people, especially women and first-generation students, were never invited into the conversation.
+
+Coinify was built to lower the barrier to curiosity.
+
+Not a textbook.  
+Not a lecture.  
+But an interactive, mobile-first experience.
+
+---
+
+This is a financial literacy app: lessons, mini-games, and a DEI-focused
+
+**Financial Audit** simulation. Vellum-inspired design with Gemini and ElevenLabs; 
 
 ## Stack
 
 - **Backend:** Python, FastAPI, session-based auth (cookies)
-- **Frontend:** HTML, Tailwind (CDN), minimal vanilla JS (no React)
-- **Optional:** Gemini API (lesson content + adaptive quiz), ElevenLabs (call simulator voice). Fallbacks: mock content, browser `speechSynthesis`
+- **Frontend:** HTML, Tailwind (CDN), vanilla JS (no frameworks)
+- Gemini API (lesson content + adaptive quiz), ElevenLabs (voice). 
 
-## Colors & mascot
+## Design
 
-- Blue `#134F6B`, Orange `#FAA208`, Yellow `#FFD500`, Green `#19C319`, Purple `#8332ac`
-- Simple coin mascot (CSS + emoji-style face)
+- **Vellum aesthetic** – Cream background (`#f9f7f2`), paper texture, frosted cards, Playfair Display + Plus Jakarta Sans + JetBrains Mono
+- **Financial Audit** – Black-and-white theme (zinc-900) for the DEI simulation, matching the “Final Audit” card on Home
+
 
 ## Setup
 
@@ -63,30 +84,31 @@ Then open: **http://localhost:8000/static/login.html**
 
 ## Pages
 
-| Page            | Path                      | Description                          |
-|-----------------|---------------------------|--------------------------------------|
-| Login           | `/static/login.html`      | Demo login (session cookie)          |
-| Home            | `/static/home.html`       | XP, level, streak, shortcuts         |
-| Lessons         | `/static/lessons.html`    | List of lessons                      |
-| Lesson detail   | `/static/lesson.html?id=1`| Content + mini-game quiz             |
-| Call Simulator  | `/static/call-simulator.html` | Final assessment, play script (voice) |
-| Account         | `/static/account.html`    | Stats, badges, logout                |
+| Page | Path | Description |
+|------|------|-------------|
+| Login | `/static/login.html` | Demo login (session cookie) |
+| Home | `/static/home.html` | Greeting, XP/streak, Today’s Curations, Final Audit card, badges |
+| Lessons | `/static/lessons.html` | List of lessons (modules) |
+| Lesson detail | `/static/lesson.html?id=1` | Content + quiz; earn XP |
+| **Financial Arcade** | `/static/financial-arcade.html` | 4 mini-games, player name, leaderboard (localStorage) |
+| Mini-games | `/static/minigames/*.html` | Budget Blitz, Credit Quest, Scam Squad, Needs vs Wants |
+| **Financial Audit** | `/static/financial-audit.html` | DEI-focused simulation: choose scenario (salary, credit, rent, medical, investment, boundary) |
+| Audit chat | `/static/financial-audit-chat.html?scenario=salary` | Chat-based simulation with choices, confidence meter, key-questions checklist |
+| Leaderboard | `/static/leaderboard.html` | Arcade high scores (localStorage) |
+| Call Simulator | `/static/call-simulator.html` | Voice call assessment (ElevenLabs or browser TTS) |
+| Account | `/static/account.html` | Stats, badges, logout |
 
 ## Gamification
 
-- **XP** – Earned from lessons and quiz; 100 XP per level.
+- **XP** – From lessons, quiz, and Financial Audit; 100 XP per level.
 - **Level** – Derived from total XP.
-- **Badges** – First lesson, 3-day streak, 7-day streak, all lessons, Call Simulator, Quiz master.
+- **Badges** – First lesson, streaks, all lessons, Call Pro, Quiz master; **Audit badges** per completed scenario (localStorage).
 - **Daily streak** – Consecutive days with activity (in-memory; resets on server restart).
+- **Arcade leaderboard** – Mini-game scores stored in localStorage; optional player name.
 
 ## API keys (optional)
 
-- **No keys** – Mock lessons and quiz; Call Simulator uses browser text-to-speech.
 - **GEMINI_API_KEY** – AI-generated lesson content and adaptive quiz questions.
-- **ELEVENLABS_API_KEY** – Realistic voice for the Call Simulator script.
+- **ELEVENLABS_API_KEY** – Realistic voice for Call Simulator and optional NPC voice in Financial Audit.
 
-Everything runs locally without keys.
 
-## License
-
-MIT.
