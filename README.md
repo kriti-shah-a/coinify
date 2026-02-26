@@ -5,7 +5,7 @@
 
 ## What Inspired This Project
 
-Financial literacy in American high schools is inconsistent and often minimal.
+In American high schools, financial literacy is barely covered.
 
 Many students graduate understanding advanced math but not how interest compounds, how loans work, how credit scores are calculated, or how to negotiate compensation.
 
