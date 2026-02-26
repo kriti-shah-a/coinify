@@ -28,11 +28,6 @@ This is a financial literacy app: lessons, mini-games, and a DEI-focused
 - **Frontend:** HTML, Tailwind (CDN), vanilla JS (no frameworks)
 - Gemini API (lesson content + adaptive quiz), ElevenLabs (voice). 
 
-## Design
-
-- **Vellum aesthetic** – Cream background (`#f9f7f2`), paper texture, frosted cards, Playfair Display + Plus Jakarta Sans + JetBrains Mono
-- **Financial Audit** – Black-and-white theme (zinc-900) for the DEI simulation, matching the “Final Audit” card on Home
-
 
 ## Setup
 
