@@ -1,4 +1,4 @@
-# 🟣 Coinify  
+# Coinify  
 **Where money skills become superpowers.**
 
 ---
@@ -32,7 +32,7 @@ The goal is real-world financial fluency through practice and simulation.
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 **Backend**
 - Python
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🔑 Optional: Add API Keys
+## Optional: Add API Keys
 
 Copy the example environment file:
 
@@ -93,7 +93,7 @@ The app runs without keys, but AI features will be disabled.
 
 ---
 
-## ▶️ Run the App
+## Run the App
 
 From the backend directory:
 
@@ -114,7 +114,7 @@ http://localhost:8000/static/login.html
 
 ---
 
-## 🎮 Gamification System
+## Gamification System
 
 - **XP** – Earned from lessons, quizzes, and Financial Audit simulations (100 XP per level)
 - **Levels** – Derived from total XP
@@ -124,7 +124,7 @@ http://localhost:8000/static/login.html
 
 ---
 
-## 🤖 AI Integration
+## AI Integration
 
 ### Gemini API
 Used to generate:
@@ -136,7 +136,7 @@ Used in the **Explore Diversity in Finance** section to provide AI voice narrati
 
 ---
 
-## 🎯 Vision
+## Vision
 
 Coinify is designed to build financial confidence through structured exposure, simulation, and repetition.
 
