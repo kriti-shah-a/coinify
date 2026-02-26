@@ -1,109 +1,145 @@
-# Coinify
-
+# 🟣 Coinify  
 **Where money skills become superpowers.**
-
-### What Inspired This Project
-
-In American high schools, financial literacy is barely covered.
-
-Students graduate knowing advanced math, but not how interest compounds, how loans work, or how to negotiate pay.
-
-Finance today feels overwhelming and exclusive. And many people, especially women and first-generation students, were never invited into the conversation.
-
-Coinify was built to lower the barrier to curiosity.
-
-Not a textbook.  
-Not a lecture.  
-But an interactive, mobile-first experience.
 
 ---
 
-This is a financial literacy app: lessons, mini-games, and a DEI-focused
+## What Inspired This Project
 
-**Financial Audit** simulation. Vellum-inspired design with Gemini and ElevenLabs; 
+Financial literacy in American high schools is inconsistent and often minimal.
 
-## Stack
+Many students graduate understanding advanced math but not how interest compounds, how loans work, how credit scores are calculated, or how to negotiate compensation.
 
-- **Backend:** Python, FastAPI, session-based auth (cookies)
-- **Frontend:** HTML, Tailwind (CDN), vanilla JS (no frameworks)
-- Gemini API (lesson content + adaptive quiz), ElevenLabs (voice). 
+Finance can feel overwhelming and exclusive. Women, first-generation students, immigrants, and underrepresented communities are often disproportionately affected by limited access to financial mentorship.
 
+Coinify was built to lower the barrier to financial curiosity.
+
+Not a textbook.  
+Not a lecture.  
+But an interactive, mobile-first experience focused on applied learning.
+
+---
+
+## What is Coinify?
+
+Coinify is a financial literacy platform built around:
+
+- Structured lessons with adaptive quizzes  
+- A Financial Arcade with interactive mini-games
+- A DEI-focused Financial Audit chat simulation  
+- An Explore Diversity in Finance section with AI voice narration  
+
+The goal is real-world financial fluency through practice and simulation.
+
+---
+
+## 🛠 Tech Stack
+
+**Backend**
+- Python
+- FastAPI
+- Gemini API (lesson content + adaptive quizzes)
+- ElevenLabs API (voice narration for diversity articles)
+
+**Frontend**
+- HTML
+- Tailwind CSS (CDN)
+- Vanilla JavaScript (no frameworks)
+---
 
 ## Setup
 
-1. **Clone and go to project root**
-   ```bash
-   cd coinify
-   ```
+### 1. Clone the repository
 
-2. **Create a virtualenv (recommended)**
-   ```bash
-   python -m venv venv
-   # Windows:
-   venv\Scripts\activate
-   # macOS/Linux:
-   source venv/bin/activate
-   ```
+```bash
+cd coinify
+```
 
-3. **Install backend dependencies**
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   ```
+### 2. Create a virtual environment (recommended)
 
-4. **Optional: API keys**  
-   Copy `.env.example` to `.env` and add keys if you have them. The app works without any keys.
-   ```bash
-   copy .env.example .env   # Windows
-   # cp .env.example .env   # macOS/Linux
-   ```
+```bash
+python -m venv venv
 
-## Run
+# Windows
+venv\Scripts\activate
 
-From the **backend** directory:
+# macOS/Linux
+source venv/bin/activate
+```
+
+### 3. Install backend dependencies
+
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+---
+
+## 🔑 Optional: Add API Keys
+
+Copy the example environment file:
+
+```bash
+copy .env.example .env   # Windows
+# cp .env.example .env   # macOS/Linux
+```
+
+Add the following if available:
+
+- `GEMINI_API_KEY`
+- `ELEVENLABS_API_KEY`
+
+The app runs without keys, but AI features will be disabled.
+
+---
+
+## ▶️ Run the App
+
+From the backend directory:
 
 ```bash
 cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Or from project root (with `pip install` already run from `backend`):
+Open in browser:
 
-```bash
-cd backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+http://localhost:8000/static/login.html
 ```
 
-Then open: **http://localhost:8000/static/login.html**
+**Demo Login:**
+- Username: `demo`
+- Password: `demo`
 
-- **Login:** username `demo`, password `demo`
+---
 
-## Pages
+## 🎮 Gamification System
 
-| Page | Path | Description |
-|------|------|-------------|
-| Login | `/static/login.html` | Demo login (session cookie) |
-| Home | `/static/home.html` | Greeting, XP/streak, Today’s Curations, Final Audit card, badges |
-| Lessons | `/static/lessons.html` | List of lessons (modules) |
-| Lesson detail | `/static/lesson.html?id=1` | Content + quiz; earn XP |
-| **Financial Arcade** | `/static/financial-arcade.html` | 4 mini-games, player name, leaderboard (localStorage) |
-| Mini-games | `/static/minigames/*.html` | Budget Blitz, Credit Quest, Scam Squad, Needs vs Wants |
-| **Financial Audit** | `/static/financial-audit.html` | DEI-focused simulation: choose scenario (salary, credit, rent, medical, investment, boundary) |
-| Audit chat | `/static/financial-audit-chat.html?scenario=salary` | Chat-based simulation with choices, confidence meter, key-questions checklist |
-| Leaderboard | `/static/leaderboard.html` | Arcade high scores (localStorage) |
-| Call Simulator | `/static/call-simulator.html` | Voice call assessment (ElevenLabs or browser TTS) |
-| Account | `/static/account.html` | Stats, badges, logout |
+- **XP** – Earned from lessons, quizzes, and Financial Audit simulations (100 XP per level)
+- **Levels** – Derived from total XP
+- **Badges** – Lesson milestones, streak achievements, audit completion
+- **Daily Streak** – Consecutive activity days (in-memory)
+- **Leaderboard** – Mini-game scores stored in localStorage
 
-## Gamification
+---
 
-- **XP** – From lessons, quiz, and Financial Audit; 100 XP per level.
-- **Level** – Derived from total XP.
-- **Badges** – First lesson, streaks, all lessons, Call Pro, Quiz master; **Audit badges** per completed scenario (localStorage).
-- **Daily streak** – Consecutive days with activity (in-memory; resets on server restart).
-- **Arcade leaderboard** – Mini-game scores stored in localStorage; optional player name.
+## 🤖 AI Integration
 
-## API keys (optional)
+### Gemini API
+Used to generate:
+- Dynamic lesson content  
+- Adaptive quiz questions  
 
-- **GEMINI_API_KEY** – AI-generated lesson content and adaptive quiz questions.
-- **ELEVENLABS_API_KEY** – Realistic voice to read the articles listed.
+### ElevenLabs API
+Used in the **Explore Diversity in Finance** section to provide AI voice narration for articles, improving accessibility and engagement.
 
+---
 
+## 🎯 Vision
+
+Coinify is designed to build financial confidence through structured exposure, simulation, and repetition.
+
+The goal is simple:
+
+Equip users with the clarity and practical skills needed to navigate real financial decisions independently.
