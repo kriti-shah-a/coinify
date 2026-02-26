@@ -104,6 +104,6 @@ Then open: **http://localhost:8000/static/login.html**
 ## API keys (optional)
 
 - **GEMINI_API_KEY** – AI-generated lesson content and adaptive quiz questions.
-- **ELEVENLABS_API_KEY** – Realistic voice for Call Simulator and optional NPC voice in Financial Audit.
+- **ELEVENLABS_API_KEY** – Realistic voice to read the articles listed.
 
 
